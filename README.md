@@ -35,11 +35,18 @@ If you want more details about this, check our blog post: [Automate your Steampi
 ## How to use it
 
 ```bash
-./steampipe_config_generator -role my-org-role-name
+./steampipe_config_generator --role my-org-role-name
 ```
 
-If you are executing the tool inside an EC2 instance use `-credential Ec2InstanceMetadata` flag.
-If you are executing the tool inside an ECS container use `-credential EcsContainer` flag.
+If you are executing the tool inside an EC2 instance use `--credential Ec2InstanceMetadata` flag.
+If you are executing the tool inside an ECS container use `--credential EcsContainer` flag.
+
+Run `./steampipe_config_generator --help` for the full list of flags, and
+`./steampipe_config_generator --version` to print the installed version.
+
+> [!WARNING]
+> **Breaking change:** starting with this release, flags use a double dash (`--role`) instead of a
+> single dash (`-role`). Update any scripts that invoke this tool.
 
 
 ### Create Aggregators
