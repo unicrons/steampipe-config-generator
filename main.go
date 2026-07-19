@@ -97,41 +97,19 @@ func parseTemplate(templatePath string) (*template.Template, error) {
 	}
 }
 
-func main() {
-	flags, err := cmd.ParseFlags()
+func run(flags *cmd.Flags) error {
+	logger.SetLoggerFormat(flags.LogFormat)
 
+	accounts, err := aws.GetOrganizationAccounts(flags.AssumeRoleArn, flags.DefaultRegion)
 	if err != nil {
-		log.Error("error parsing flags:", err)
-		return
-	}
-
-	log.Debug("parsed flags:", flags)
-
-	roleName := flags.RoleName
-	credentialSource := flags.CredentialSource
-	credentialPath := flags.CredentialPath
-	connectionsPath := flags.ConnectionsPath
-	importSchema := flags.ImportSchema
-	defaultRegion := flags.DefaultRegion
-	targetRegions := flags.TargetRegions
-	assumeRoleArn := flags.AssumeRoleArn
-	templatePath := flags.TemplatePath
-	skipOUs := flags.SkipOUs
-	logFormat := flags.LogFormat
-
-	logger.SetLoggerFormat(logFormat)
-
-	accounts, err := aws.GetOrganizationAccounts(assumeRoleArn, defaultRegion)
-	if err != nil {
-		log.Error("error getting aws organization accounts:", err)
-		return
+		return fmt.Errorf("error getting aws organization accounts: %v", err)
 	}
 
 	var organizationAccounts []CredentialAccount
 	taggedAccounts := make(map[string][]string)
 
 	for _, acc := range accounts {
-		if slices.Contains(skipOUs, acc.AccountOU) {
+		if slices.Contains(flags.SkipOUs, acc.AccountOU) {
 			log.Infof("Skipping account %v included skipOUs argument", acc.AccountID)
 			continue
 		}
@@ -145,11 +123,11 @@ func main() {
 
 		organizationAccounts = append(organizationAccounts, CredentialAccount{
 			Name:             name,
-			RoleARN:          "arn:aws:iam::" + acc.AccountID + ":role/" + roleName,
-			CredentialSource: credentialSource,
-			ImportSchema:     importSchema,
-			DefaultRegion:    defaultRegion,
-			TargetRegions:    targetRegions,
+			RoleARN:          "arn:aws:iam::" + acc.AccountID + ":role/" + flags.RoleName,
+			CredentialSource: flags.CredentialSource,
+			ImportSchema:     flags.ImportSchema,
+			DefaultRegion:    flags.DefaultRegion,
+			TargetRegions:    flags.TargetRegions,
 		})
 	}
 
@@ -158,17 +136,20 @@ func main() {
 		Tags:     taggedAccounts,
 	}
 
-	err = createAWSCredentialsFile(credentialPath, organizationAccounts)
-	if err != nil {
-		log.Error("error creating aws credentials file:", err)
-		return
+	if err := createAWSCredentialsFile(flags.CredentialPath, organizationAccounts); err != nil {
+		return fmt.Errorf("error creating aws credentials file: %v", err)
 	}
 
-	err = createAWSConnectionsFile(connectionsPath, templatePath, data)
-	if err != nil {
-		log.Error("error creating aws connections file:", err)
-		return
+	if err := createAWSConnectionsFile(flags.ConnectionsPath, flags.TemplatePath, data); err != nil {
+		return fmt.Errorf("error creating aws connections file: %v", err)
 	}
 
 	log.Info("config files created successfully")
+	return nil
+}
+
+func main() {
+	if err := cmd.NewRootCmd(run).Execute(); err != nil {
+		os.Exit(1)
+	}
 }
