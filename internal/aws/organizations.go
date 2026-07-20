@@ -8,6 +8,7 @@ import (
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/aws/retry"
 	"github.com/aws/aws-sdk-go-v2/service/organizations"
+	"github.com/aws/aws-sdk-go-v2/service/organizations/types"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -63,7 +64,7 @@ func (c *organizationsClient) listActiveAccounts(ctx context.Context) ([]Account
 		}
 
 		for _, acc := range page.Accounts {
-			if string(acc.Status) != "ACTIVE" {
+			if acc.State != types.AccountStateActive {
 				continue
 			}
 			accounts = append(accounts, Account{ID: *acc.Id, Name: *acc.Name})
