@@ -23,7 +23,7 @@ Versioning](#versioning). Everything below shipped since `v0.1.2`.
 
 ### Added
 
-- `--tagSplit` flag: split a multi-value AWS tag (e.g. `compliance=pci:soc`) into individual
+- `--tagSplit` flag: split a multi-value AWS tag (e.g. `team=frontend:backend`) into individual
   values, so each becomes its own Steampipe aggregator group. Opt-in per tag key; existing
   single-value tags are unaffected. See the README for examples.
 - `--version` flag and `version` subcommand, with version/commit/date injected at build time.

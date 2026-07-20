@@ -5,7 +5,7 @@ Manage your [Steampipe](https://steampipe.io/) AWS config files at scale!
 
 ## What is this?
 
-*steampipe-config-generator* is tool that generates configuration files for [steampipe-aws-plugin](https://hub.steampipe.io/plugins/turbot/aws). These files are used by Steampipe AWS plugin to connect to your AWS Accounts and fetch the desired data.
+*steampipe-config-generator* is a tool that generates configuration files for [steampipe-aws-plugin](https://hub.steampipe.io/plugins/turbot/aws). These files are used by Steampipe AWS plugin to connect to your AWS Accounts and fetch the desired data.
 
 We have created this tool to facilitate the creation and management of these files in organizations with multiple accounts.  
 If you want more details about this, check our blog post: [Automate your Steampipe AWS configuration with AWS Organizations](https://unicrons.cloud/en/2024/10/18/automate-your-steampipe-aws-configuration-with-aws-organizations/)
@@ -18,7 +18,7 @@ If you want more details about this, check our blog post: [Automate your Steampi
 - Automate generation of `.aws/credentials` and `.steampipe/config/aws.spc` for your AWS Organization.
 - Create Steampipe connection *[aggregators](https://steampipe.io/docs/managing/connections#using-aggregators)* using your AWS Organization Accounts tags.
 - Skip AWS Accounts based on their organizational units.
-- Assume an IAM role to fech AWS Organizations information.
+- Assume an IAM role to fetch AWS Organizations information.
 
 
 ## Requirements
@@ -44,14 +44,10 @@ If you are executing the tool inside an ECS container use `--credential EcsConta
 Run `./steampipe_config_generator --help` for the full list of flags, and
 `./steampipe_config_generator --version` to print the installed version.
 
-> [!WARNING]
-> **Breaking change:** starting with this release, flags use a double dash (`--role`) instead of a
-> single dash (`-role`). Update any scripts that invoke this tool.
-
 
 ### Create Aggregators
 
-The [aws_connections.tmpl](/code/templates/aws_connections.tmpl) template is used to generate the AWS connections files where you can add the needed *aggregators*.
+The [aws_connections.tmpl](./generator/templates/aws_connections.tmpl) template is used to generate the AWS connections files where you can add the needed *aggregators*.
 
 To create an *aggregators* based on your AWS Account names. E.g: The following template will create an aggregator with all your AWS Accounts whose name begins with `Sandbox`:
 ```go
@@ -82,9 +78,9 @@ By default, a tag is matched by its exact value (`team=frontend` only matches `i
 If an account can belong to more than one group at once, use `--tagSplit` to split a tag's value on one
 or more delimiter characters, per tag key. Each resulting value becomes its own aggregator group.
 
-E.g. with an account tagged `team=frontend:backend` and:
+E.g. with an account tagged `team=frontend:backend`:
 ```bash
---tagSplit="team=:"
+./steampipe_config_generator --role my-org-role-name --tagSplit="team=:"
 ```
 that account is included in both `index .Tags "team,frontend"` and `index .Tags "team,backend"` — the
 combined value `team,frontend:backend` is not registered, only the split values are.
