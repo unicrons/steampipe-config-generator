@@ -2,14 +2,18 @@ package cmd_test
 
 import (
 	"bytes"
+	"context"
+	"log/slog"
 	"testing"
 
 	"github.com/unicrons/steampipe-config-generator/cmd"
 )
 
+type runFunc func(ctx context.Context, log *slog.Logger, flags *cmd.Flags) error
+
 // execute runs cmd with the given args against a fresh command tree and returns its output
 // and error. run is invoked only if flag parsing/validation succeeds.
-func execute(t *testing.T, run func(*cmd.Flags) error, args ...string) (string, error) {
+func execute(t *testing.T, run runFunc, args ...string) (string, error) {
 	t.Helper()
 
 	root := cmd.NewRootCmd(run)
@@ -24,7 +28,7 @@ func execute(t *testing.T, run func(*cmd.Flags) error, args ...string) (string, 
 
 func TestNewRootCmd_HappyPath(t *testing.T) {
 	var got *cmd.Flags
-	run := func(f *cmd.Flags) error {
+	run := func(_ context.Context, _ *slog.Logger, f *cmd.Flags) error {
 		got = f
 		return nil
 	}
@@ -69,7 +73,7 @@ func TestNewRootCmd_HappyPath(t *testing.T) {
 
 func TestNewRootCmd_HappyPath_Defaults(t *testing.T) {
 	var got *cmd.Flags
-	run := func(f *cmd.Flags) error {
+	run := func(_ context.Context, _ *slog.Logger, f *cmd.Flags) error {
 		got = f
 		return nil
 	}
@@ -94,7 +98,7 @@ func TestNewRootCmd_HappyPath_Defaults(t *testing.T) {
 }
 
 func TestNewRootCmd_RoleRequired(t *testing.T) {
-	run := func(*cmd.Flags) error {
+	run := func(context.Context, *slog.Logger, *cmd.Flags) error {
 		t.Fatal("run should not be called when --role is missing")
 		return nil
 	}
@@ -126,7 +130,7 @@ func TestNewRootCmd_InvalidFlagValues(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			run := func(*cmd.Flags) error {
+			run := func(context.Context, *slog.Logger, *cmd.Flags) error {
 				t.Fatal("run should not be called for an invalid flag value")
 				return nil
 			}
@@ -140,7 +144,7 @@ func TestNewRootCmd_InvalidFlagValues(t *testing.T) {
 }
 
 func TestNewRootCmd_Version(t *testing.T) {
-	run := func(*cmd.Flags) error {
+	run := func(context.Context, *slog.Logger, *cmd.Flags) error {
 		t.Fatal("run should not be called for --version")
 		return nil
 	}
@@ -155,7 +159,7 @@ func TestNewRootCmd_Version(t *testing.T) {
 }
 
 func TestNewVersionCmd(t *testing.T) {
-	run := func(*cmd.Flags) error {
+	run := func(context.Context, *slog.Logger, *cmd.Flags) error {
 		t.Fatal("run should not be called for the version subcommand")
 		return nil
 	}
