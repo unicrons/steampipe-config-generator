@@ -1,7 +1,6 @@
 package generator
 
 import (
-	"context"
 	"strings"
 	"testing"
 
@@ -68,7 +67,7 @@ func TestValidateTagSplit_InvalidDelimiter(t *testing.T) {
 }
 
 func TestNew_InvalidTagSplitDelimiter(t *testing.T) {
-	_, err := New(context.Background(), Options{
+	_, err := New(t.Context(), Options{
 		RoleName: "my-role",
 		TagSplit: map[string]string{"team": "!"},
 	})
@@ -141,7 +140,7 @@ func TestGenerator_Accounts_MultiValueTagAggregation(t *testing.T) {
 		opts:   Options{RoleName: "my-role", TagSplit: map[string]string{"team": ":"}},
 	}
 
-	accounts, err := g.Accounts(context.Background())
+	accounts, err := g.Accounts(t.Context())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

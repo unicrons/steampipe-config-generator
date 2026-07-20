@@ -11,7 +11,7 @@ func TestFetchConcurrently_AllSucceed(t *testing.T) {
 	const n = 10
 	var calls int32
 
-	err := fetchConcurrently(context.Background(), n, 3, func(ctx context.Context, i int) error {
+	err := fetchConcurrently(t.Context(), n, 3, func(ctx context.Context, i int) error {
 		atomic.AddInt32(&calls, 1)
 		return nil
 	})
@@ -29,7 +29,7 @@ func TestFetchConcurrently_AllSucceed(t *testing.T) {
 func TestFetchConcurrently_OneFailureIsNotSilenced(t *testing.T) {
 	wantErr := errors.New("boom")
 
-	err := fetchConcurrently(context.Background(), 10, 3, func(ctx context.Context, i int) error {
+	err := fetchConcurrently(t.Context(), 10, 3, func(ctx context.Context, i int) error {
 		if i == 7 {
 			return wantErr
 		}
@@ -44,7 +44,7 @@ func TestFetchConcurrently_RespectsLimit(t *testing.T) {
 	const limit = 3
 	var current, max int32
 
-	err := fetchConcurrently(context.Background(), 20, limit, func(ctx context.Context, i int) error {
+	err := fetchConcurrently(t.Context(), 20, limit, func(ctx context.Context, i int) error {
 		c := atomic.AddInt32(&current, 1)
 		defer atomic.AddInt32(&current, -1)
 
