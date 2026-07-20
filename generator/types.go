@@ -1,7 +1,9 @@
 package generator
 
 // Account is an AWS Organizations account together with the data needed to render its
-// Steampipe connection and credentials entries.
+// Steampipe connection and credentials entries. Tags maps each tag key to its value(s) - a
+// single-element slice for tags with no configured split, or multiple elements for tags
+// listed in Options.TagSplit.
 type Account struct {
 	Name             string
 	RoleARN          string
@@ -9,7 +11,7 @@ type Account struct {
 	ImportSchema     string
 	DefaultRegion    string
 	TargetRegions    []string
-	Tags             map[string]string
+	Tags             map[string][]string
 }
 
 // Options configures a Generator.
@@ -29,4 +31,9 @@ type Options struct {
 	TargetRegions []string
 	// SkipOUs lists organizational unit IDs whose accounts are excluded from the result.
 	SkipOUs []string
+	// TagSplit maps a tag key to the set of delimiter characters (e.g. ":-") its value
+	// should be split on. Tags whose key isn't listed here keep their raw value, unchanged.
+	// Only characters from AWS's supported tag character set are valid delimiters:
+	// . : + = @ _ / -
+	TagSplit map[string]string
 }

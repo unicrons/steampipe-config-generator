@@ -76,6 +76,25 @@ connection "aws_engineering_team" {
 }
 ```
 
+#### Multi-value tags
+
+By default, a tag is matched by its exact value (`team=frontend` only matches `index .Tags "team,frontend"`).
+If an account can belong to more than one group at once, use `--tagSplit` to split a tag's value on one
+or more delimiter characters, per tag key. Each resulting value becomes its own aggregator group.
+
+E.g. with an account tagged `team=frontend:backend` and:
+```bash
+--tagSplit="team=:"
+```
+that account is included in both `index .Tags "team,frontend"` and `index .Tags "team,backend"` — the
+combined value `team,frontend:backend` is not registered, only the split values are.
+
+`--tagSplit` takes a `key=delimiter[,delimiter...]` pair (repeatable for multiple keys), where each
+comma-separated `delimiter` is a single character to split on, e.g. `--tagSplit="team=:,-"` splits the
+`team` tag on `:` **or** `-`. Only tags listed in `--tagSplit` are affected — every other tag keeps
+today's exact-match behavior unchanged. Valid delimiter characters are limited to AWS's supported tag
+character set: `. : + = @ _ / -`.
+
 
 ## Contribute
 

@@ -24,6 +24,10 @@ type generator struct {
 // New returns a Generator configured from the default AWS environment, assuming
 // opts.AssumeRoleArn first if set.
 func New(ctx context.Context, opts Options) (Generator, error) {
+	if err := validateTagSplit(opts.TagSplit); err != nil {
+		return nil, err
+	}
+
 	cfg, err := internalaws.LoadConfig(ctx, internalaws.Config{
 		AssumeRoleArn: opts.AssumeRoleArn,
 		Region:        opts.Region,
