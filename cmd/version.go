@@ -19,8 +19,8 @@ func NewVersionCmd() *cobra.Command {
 		Use:   "version",
 		Short: "Print version information",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintf(cmd.OutOrStdout(), "steampipe-config-generator %s (commit %s, built %s)\n", Version, Commit, Date)
-			return nil
+			_, err := fmt.Fprintf(cmd.OutOrStdout(), "steampipe-config-generator %s (commit %s, built %s)\n", Version, Commit, Date)
+			return err
 		},
 	}
 }

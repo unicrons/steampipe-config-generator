@@ -10,16 +10,22 @@ builds:
     goos:
       - linux
       - darwin
+      - windows
     goarch:
       - amd64
       - arm64
+    ldflags:
+      '-s -w -X github.com/unicrons/{{ .ProjectName }}/cmd.Version={{.Version}} -X github.com/unicrons/{{ .ProjectName }}/cmd.Commit={{.Commit}} -X github.com/unicrons/{{ .ProjectName }}/cmd.Date={{.Date}}'
+
+universal_binaries:
+  - replace: true
 
 archives:
-  - format: zip
+  - formats: [zip]
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     format_overrides:
     - goos: linux
-      format: tar.gz
+      formats: [tar.gz]
 
 changelog:
   sort: asc
