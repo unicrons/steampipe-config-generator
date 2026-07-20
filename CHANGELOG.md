@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Starting with the next release, `steampipe-config-generator` follows [Semantic
-Versioning](#versioning). Everything below shipped since `v0.1.2` and will ship as `v1.0.0`.
+## [1.0.0] - 2026-07-21
+
+Starting with this release, `steampipe-config-generator` follows [Semantic
+Versioning](#versioning). Everything below shipped since `v0.1.2`.
 
 ### Breaking changes
 
@@ -58,4 +60,5 @@ Versioning](#versioning). Everything below shipped since `v0.1.2` and will ship 
 See the [GitHub releases](https://github.com/unicrons/steampipe-config-generator/releases) for
 this and earlier versions.
 
-[Unreleased]: https://github.com/unicrons/steampipe-config-generator/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/unicrons/steampipe-config-generator/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/unicrons/steampipe-config-generator/compare/v0.1.2...v1.0.0
