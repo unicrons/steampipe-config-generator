@@ -96,6 +96,14 @@ today's exact-match behavior unchanged. Valid delimiter characters are limited t
 character set: `. : + = @ _ / -`.
 
 
+## Versioning
+
+This project follows [Semantic Versioning](https://semver.org/): breaking changes (to CLI flags
+or to the Go library API in `generator/`) bump the major version, new features bump the minor
+version, and fixes bump the patch version. See [CHANGELOG.md](./CHANGELOG.md) for what changed
+in each release.
+
+
 ## Contribute
 
 We welcome all contributors!
