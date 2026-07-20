@@ -23,9 +23,10 @@ type organizationsClient struct {
 	client *organizations.Client
 }
 
-// NewOrganizationsClient returns an OrganizationsClient backed by the real AWS SDK, using an
-// aggressive retry policy since AWS Organizations has strict rate limits.
-func NewOrganizationsClient(cfg awssdk.Config) OrganizationsClient {
+// NewOrganizationsClient returns a client backed by the real AWS SDK, using an aggressive
+// retry policy since AWS Organizations has strict rate limits. Its ListAccounts method
+// satisfies generator.OrganizationsClient.
+func NewOrganizationsClient(cfg awssdk.Config) *organizationsClient {
 	cfg.Retryer = func() awssdk.Retryer {
 		return retry.NewStandard(func(o *retry.StandardOptions) {
 			o.MaxAttempts = 5

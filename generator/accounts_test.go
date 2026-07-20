@@ -41,7 +41,7 @@ func TestGenerator_Accounts(t *testing.T) {
 		},
 	}
 
-	accounts, err := g.Accounts(context.Background())
+	accounts, err := g.Accounts(t.Context())
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -67,7 +67,7 @@ func TestGenerator_Accounts_FetchErrorIsNotSilenced(t *testing.T) {
 	client := &fakeOrganizationsClient{err: wantErr}
 	g := &generator{client: client, opts: Options{}}
 
-	_, err := g.Accounts(context.Background())
+	_, err := g.Accounts(t.Context())
 	if err == nil {
 		t.Fatal("expected an error, got nil")
 	}

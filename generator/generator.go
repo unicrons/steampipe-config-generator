@@ -16,8 +16,16 @@ type Generator interface {
 	Accounts(ctx context.Context) ([]Account, error)
 }
 
+// OrganizationsClient lists AWS Organizations accounts. Defined here, where it's consumed,
+// rather than in internal/aws where it's implemented - internal/aws.NewOrganizationsClient
+// returns a real, SDK-backed implementation; tests use an in-memory fake instead.
+type OrganizationsClient interface {
+	// ListAccounts returns all ACTIVE accounts in the organization, with tags and OU populated.
+	ListAccounts(ctx context.Context) ([]internalaws.Account, error)
+}
+
 type generator struct {
-	client internalaws.OrganizationsClient
+	client OrganizationsClient
 	opts   Options
 }
 
