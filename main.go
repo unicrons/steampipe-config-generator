@@ -52,10 +52,14 @@ func writeCredentialsFile(path string, accounts []generator.Account) error {
 	if err != nil {
 		return fmt.Errorf("creating aws credentials file: %w", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	if err := generator.RenderCredentials(file, accounts); err != nil {
 		return fmt.Errorf("rendering aws credentials file: %w", err)
+	}
+
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("closing aws credentials file: %w", err)
 	}
 	return nil
 }
@@ -74,10 +78,14 @@ func writeConnectionsFile(path, templatePath string, accounts []generator.Accoun
 	if err != nil {
 		return fmt.Errorf("creating aws connections file: %w", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	if err := generator.RenderConnections(file, accounts, tmpl); err != nil {
 		return fmt.Errorf("rendering aws connections file: %w", err)
+	}
+
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("closing aws connections file: %w", err)
 	}
 	return nil
 }
