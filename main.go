@@ -11,8 +11,12 @@ import (
 	"github.com/unicrons/steampipe-config-generator/generator"
 )
 
-func run(ctx context.Context, log *slog.Logger, flags *cmd.Flags) error {
-	gen, err := generator.New(ctx, generator.Options{
+// newGenerator abstracts generator.New so tests can inject a fake Generator instead of
+// hitting real AWS. Production code always passes generator.New itself.
+type newGeneratorFunc func(ctx context.Context, opts generator.Options) (generator.Generator, error)
+
+func run(ctx context.Context, log *slog.Logger, flags *cmd.Flags, newGenerator newGeneratorFunc) error {
+	gen, err := newGenerator(ctx, generator.Options{
 		AssumeRoleArn:    flags.AssumeRoleArn,
 		Region:           flags.DefaultRegion,
 		RoleName:         flags.RoleName,
@@ -91,7 +95,10 @@ func writeConnectionsFile(path, templatePath string, accounts []generator.Accoun
 }
 
 func main() {
-	if err := cmd.NewRootCmd(run).Execute(); err != nil {
+	root := cmd.NewRootCmd(func(ctx context.Context, log *slog.Logger, flags *cmd.Flags) error {
+		return run(ctx, log, flags, generator.New)
+	})
+	if err := root.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
