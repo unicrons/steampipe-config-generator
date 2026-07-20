@@ -28,6 +28,7 @@ type Flags struct {
 	TemplatePath     string
 	LogFormat        string
 	SkipOUs          []string
+	TagSplit         map[string]string
 }
 
 var (
@@ -75,6 +76,7 @@ func NewRootCmd(run func(ctx context.Context, log *slog.Logger, flags *Flags) er
 	cmd.Flags().StringVar(&flags.TemplatePath, "template", "", "Custom connections template path")
 	cmd.Flags().StringVar(&flags.LogFormat, "log", "default", "Log format: default, json")
 	cmd.Flags().StringVar(&skipOUs, "skipOUs", "", "AWS OU IDs to skip from account connections")
+	cmd.Flags().StringToStringVar(&flags.TagSplit, "tagSplit", nil, `Per-tag delimiter character(s) to split a multi-value tag on, as key=delimiter[,delimiter...] (repeatable), e.g. --tagSplit="team=:,-" splits the "team" tag on ':' or '-'`)
 
 	if err := cmd.MarkFlagRequired("role"); err != nil {
 		panic(err)

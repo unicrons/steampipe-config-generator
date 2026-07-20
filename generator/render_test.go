@@ -52,7 +52,7 @@ func TestRenderConnections_DefaultTemplate(t *testing.T) {
 			DefaultRegion: "us-east-1",
 			ImportSchema:  "enabled",
 			TargetRegions: []string{"*"},
-			Tags:          map[string]string{"compliance_rolling": "true"},
+			Tags:          map[string][]string{"sandbox_account": {"true"}},
 		},
 		{
 			Name:          "team_bar",
@@ -89,26 +89,26 @@ func TestParseConnectionsTemplate_InvalidPath(t *testing.T) {
 
 func TestAggregateTags(t *testing.T) {
 	accounts := []Account{
-		{Name: "team_foo", Tags: map[string]string{"compliance_rolling": "true"}},
-		{Name: "team_bar", Tags: map[string]string{"compliance_rolling": "true"}},
-		{Name: "team_baz", Tags: map[string]string{"compliance_rolling": "false"}},
+		{Name: "team_foo", Tags: map[string][]string{"sandbox_account": {"true"}}},
+		{Name: "team_bar", Tags: map[string][]string{"sandbox_account": {"true"}}},
+		{Name: "team_baz", Tags: map[string][]string{"sandbox_account": {"false"}}},
 	}
 
 	got := aggregateTags(accounts)
 
 	want := []string{"team_foo", "team_bar"}
-	names := got["compliance_rolling,true"]
+	names := got["sandbox_account,true"]
 	if len(names) != len(want) {
-		t.Fatalf("aggregateTags()[compliance_rolling,true] = %v, want %v", names, want)
+		t.Fatalf("aggregateTags()[sandbox_account,true] = %v, want %v", names, want)
 	}
 	seen := map[string]bool{names[0]: true, names[1]: true}
 	for _, w := range want {
 		if !seen[w] {
-			t.Errorf("aggregateTags()[compliance_rolling,true] missing %q, got %v", w, names)
+			t.Errorf("aggregateTags()[sandbox_account,true] missing %q, got %v", w, names)
 		}
 	}
 
-	if names := got["compliance_rolling,false"]; len(names) != 1 || names[0] != "team_baz" {
-		t.Errorf("aggregateTags()[compliance_rolling,false] = %v, want [team_baz]", names)
+	if names := got["sandbox_account,false"]; len(names) != 1 || names[0] != "team_baz" {
+		t.Errorf("aggregateTags()[sandbox_account,false] = %v, want [team_baz]", names)
 	}
 }

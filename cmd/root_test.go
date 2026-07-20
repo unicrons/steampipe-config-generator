@@ -97,6 +97,51 @@ func TestNewRootCmd_HappyPath_Defaults(t *testing.T) {
 	}
 }
 
+func TestNewRootCmd_TagSplit_Repeatable(t *testing.T) {
+	var got *cmd.Flags
+	run := func(_ context.Context, _ *slog.Logger, f *cmd.Flags) error {
+		got = f
+		return nil
+	}
+
+	_, err := execute(t, run,
+		"--role", "my-role",
+		"--tagSplit", "team=:",
+		"--tagSplit", "cost_center=+",
+	)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if want := ":"; got.TagSplit["team"] != want {
+		t.Errorf(`TagSplit["team"] = %q, want %q`, got.TagSplit["team"], want)
+	}
+	if want := "+"; got.TagSplit["cost_center"] != want {
+		t.Errorf(`TagSplit["cost_center"] = %q, want %q`, got.TagSplit["cost_center"], want)
+	}
+}
+
+// A comma inside a single --tagSplit occurrence's value (used to list multiple delimiter
+// characters, e.g. "team=:,-") must survive pflag's own parsing unmangled - it does, because
+// pflag.StringToStringVar only switches to comma-as-pair-separator (CSV) parsing when a single
+// occurrence's value contains more than one "=", which never happens for one key=value pair.
+func TestNewRootCmd_TagSplit_CommaInValue(t *testing.T) {
+	var got *cmd.Flags
+	run := func(_ context.Context, _ *slog.Logger, f *cmd.Flags) error {
+		got = f
+		return nil
+	}
+
+	_, err := execute(t, run, "--role", "my-role", "--tagSplit", "team=:,-")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if want := ":,-"; got.TagSplit["team"] != want {
+		t.Errorf(`TagSplit["team"] = %q, want %q`, got.TagSplit["team"], want)
+	}
+}
+
 func TestNewRootCmd_RoleRequired(t *testing.T) {
 	run := func(context.Context, *slog.Logger, *cmd.Flags) error {
 		t.Fatal("run should not be called when --role is missing")

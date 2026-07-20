@@ -20,6 +20,7 @@ func run(ctx context.Context, log *slog.Logger, flags *cmd.Flags) error {
 		ImportSchema:     flags.ImportSchema,
 		TargetRegions:    flags.TargetRegions,
 		SkipOUs:          flags.SkipOUs,
+		TagSplit:         flags.TagSplit,
 	})
 	if err != nil {
 		return fmt.Errorf("creating generator: %w", err)

@@ -57,8 +57,8 @@ func TestGenerator_Accounts(t *testing.T) {
 	if got.RoleARN != "arn:aws:iam::111111111111:role/my-role" {
 		t.Errorf("RoleARN = %q", got.RoleARN)
 	}
-	if got.Tags["team"] != "foo" {
-		t.Errorf("Tags[team] = %q, want %q", got.Tags["team"], "foo")
+	if want := []string{"foo"}; len(got.Tags["team"]) != 1 || got.Tags["team"][0] != want[0] {
+		t.Errorf("Tags[team] = %v, want %v", got.Tags["team"], want)
 	}
 }
 

@@ -55,13 +55,16 @@ func RenderCredentials(w io.Writer, accounts []Account) error {
 }
 
 // aggregateTags groups account names by "tagKey,tagValue", mirroring the historical template
-// lookup convention (index .Tags "key,value").
+// lookup convention (index .Tags "key,value"). A tag with multiple values (see Options.TagSplit)
+// contributes one entry per value.
 func aggregateTags(accounts []Account) map[string][]string {
 	tagged := make(map[string][]string)
 	for _, acc := range accounts {
-		for key, value := range acc.Tags {
-			tagKey := key + "," + value
-			tagged[tagKey] = append(tagged[tagKey], acc.Name)
+		for key, values := range acc.Tags {
+			for _, value := range values {
+				tagKey := key + "," + value
+				tagged[tagKey] = append(tagged[tagKey], acc.Name)
+			}
 		}
 	}
 	return tagged
