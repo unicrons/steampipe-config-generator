@@ -44,6 +44,7 @@ func NewRootCmd(run func(ctx context.Context, log *slog.Logger, flags *Flags) er
 		flags         Flags
 		targetRegions string
 		skipOUs       string
+		rawTagSplit   []string
 	)
 
 	cmd := &cobra.Command{
@@ -54,6 +55,12 @@ func NewRootCmd(run func(ctx context.Context, log *slog.Logger, flags *Flags) er
 			if err := validateFlagValues(&flags); err != nil {
 				return err
 			}
+
+			tagSplit, err := parseTagSplit(rawTagSplit)
+			if err != nil {
+				return err
+			}
+			flags.TagSplit = tagSplit
 
 			log := logger.New(flags.LogFormat)
 
@@ -76,7 +83,7 @@ func NewRootCmd(run func(ctx context.Context, log *slog.Logger, flags *Flags) er
 	cmd.Flags().StringVar(&flags.TemplatePath, "template", "", "Custom connections template path")
 	cmd.Flags().StringVar(&flags.LogFormat, "log", "default", "Log format: default, json")
 	cmd.Flags().StringVar(&skipOUs, "skipOUs", "", "AWS OU IDs to skip from account connections")
-	cmd.Flags().StringToStringVar(&flags.TagSplit, "tagSplit", nil, `Per-tag delimiter character(s) to split a multi-value tag on, as key=delimiter[,delimiter...] (repeatable), e.g. --tagSplit="team=:,-" splits the "team" tag on ':' or '-'`)
+	cmd.Flags().StringArrayVar(&rawTagSplit, "tagSplit", nil, `Per-tag delimiter character(s) to split a multi-value tag on, as key=delimiter[,delimiter...] (repeatable), e.g. --tagSplit="team=:,-" splits the "team" tag on ':' or '-'. Parsed on the first '=' only, so delimiters may include '=' itself.`)
 
 	if err := cmd.MarkFlagRequired("role"); err != nil {
 		panic(err)
@@ -88,6 +95,28 @@ func NewRootCmd(run func(ctx context.Context, log *slog.Logger, flags *Flags) er
 	cmd.AddCommand(NewVersionCmd())
 
 	return cmd
+}
+
+// parseTagSplit parses each --tagSplit occurrence (one per tag key) into a map. It's parsed by
+// hand, splitting on only the first "=", rather than via pflag.StringToStringVar: that type
+// counts every "=" in a single occurrence to decide whether to parse it as one key=value pair
+// or several comma-separated ones, so a delimiter list containing "=" itself (a valid AWS tag
+// character) would be misparsed into a bogus extra entry instead of failing loudly. Splitting on
+// the first "=" only sidesteps that entirely, since --tagSplit is already one key per occurrence.
+func parseTagSplit(raw []string) (map[string]string, error) {
+	if len(raw) == 0 {
+		return nil, nil
+	}
+
+	tagSplit := make(map[string]string, len(raw))
+	for _, entry := range raw {
+		key, delimiters, ok := strings.Cut(entry, "=")
+		if !ok {
+			return nil, fmt.Errorf("--tagSplit %q must be formatted as key=delimiter[,delimiter...]", entry)
+		}
+		tagSplit[key] = delimiters
+	}
+	return tagSplit, nil
 }
 
 func validateFlagValues(flags *Flags) error {

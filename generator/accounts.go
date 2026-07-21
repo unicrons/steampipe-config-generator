@@ -7,15 +7,14 @@ import (
 	"strings"
 )
 
-// validTagSplitDelimiters is the subset of AWS's supported tag character set that may be
-// used as a delimiter: letters, numbers, and ". : + = @ _ / -".
+// validTagSplitDelimiters is the subset of AWS's supported tag character set that may be used
+// as a --tagSplit delimiter: letters, numbers, and ". : + = @ _ / -".
 const validTagSplitDelimiters = ".:+=@_/-"
 
 // parseDelimiters parses a --tagSplit value for one key (e.g. ":,-") into the set of
-// individual delimiter characters to split on. Delimiters are comma-separated, matching
-// pflag's own key=value1,key2=value2 convention for a single tag key's entry (a lone "," here
-// is safe: pflag.StringToStringVar only treats "," as a pair separator when a single --tagSplit
-// occurrence contains more than one "=").
+// individual delimiter characters to split on. Delimiters are comma-separated; cmd parses each
+// --tagSplit occurrence on the first "=" only (see cmd.parseTagSplit), so a delimiter list here
+// may itself contain "=" or "," without ambiguity.
 func parseDelimiters(key, raw string) (string, error) {
 	if raw == "" {
 		return "", nil
@@ -36,8 +35,14 @@ func parseDelimiters(key, raw string) (string, error) {
 }
 
 // validateTagSplit rejects any configured delimiter character outside validTagSplitDelimiters.
+// It also rejects an empty tag key: AWS tag keys can never be empty, so one showing up here is
+// never something the caller actually meant (e.g. --tagSplit="=:,-", a key accidentally left
+// blank).
 func validateTagSplit(tagSplit map[string]string) error {
 	for key, raw := range tagSplit {
+		if key == "" {
+			return fmt.Errorf("--tagSplit has an entry with an empty tag key")
+		}
 		if _, err := parseDelimiters(key, raw); err != nil {
 			return err
 		}

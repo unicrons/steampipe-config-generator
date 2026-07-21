@@ -7,7 +7,7 @@ Manage your [Steampipe](https://steampipe.io/) AWS config files at scale!
 
 *steampipe-config-generator* is a tool that generates configuration files for [steampipe-aws-plugin](https://hub.steampipe.io/plugins/turbot/aws). These files are used by Steampipe AWS plugin to connect to your AWS Accounts and fetch the desired data.
 
-We have created this tool to facilitate the creation and management of these files in organizations with multiple accounts.  
+We have created this tool to facilitate the creation and management of these files in organizations with multiple accounts.
 If you want more details about this, check our blog post: [Automate your Steampipe AWS configuration with AWS Organizations](https://unicrons.cloud/en/2024/10/18/automate-your-steampipe-aws-configuration-with-aws-organizations/)
 
 ![](./docs/flow.png)

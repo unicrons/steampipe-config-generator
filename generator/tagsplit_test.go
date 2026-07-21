@@ -53,6 +53,24 @@ func TestValidateTagSplit_InvalidDelimiter(t *testing.T) {
 	}
 }
 
+// "=" is a valid AWS tag character and a valid --tagSplit delimiter: cmd parses each occurrence
+// on the first "=" only (see cmd.parseTagSplit), so by the time a delimiter list reaches
+// generator, "=" is just another character - no special-casing needed here.
+func TestSplitTagValue_EqualsSignDelimiter(t *testing.T) {
+	got := splitTagValue("team", "frontend=backend", map[string]string{"team": "="})
+	want := []string{"frontend", "backend"}
+	if !equalUnordered(got, want) {
+		t.Errorf("splitTagValue() = %v, want %v", got, want)
+	}
+}
+
+func TestValidateTagSplit_EmptyTagKey(t *testing.T) {
+	err := validateTagSplit(map[string]string{"": ":,-"})
+	if err == nil {
+		t.Fatal("expected an error for an empty tag key")
+	}
+}
+
 func TestNew_InvalidTagSplitDelimiter(t *testing.T) {
 	_, err := New(t.Context(), Options{
 		RoleName: "my-role",
