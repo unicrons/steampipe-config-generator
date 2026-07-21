@@ -35,13 +35,17 @@ func run(ctx context.Context, log *slog.Logger, flags *cmd.Flags, newGenerator n
 		return err
 	}
 
+	credentialsFile := filepath.Join(flags.CredentialPath, "credentials")
 	if err := writeCredentialsFile(flags.CredentialPath, accounts); err != nil {
 		return err
 	}
+	log.Info("wrote AWS credentials file", "path", credentialsFile)
 
+	connectionsFile := filepath.Join(flags.ConnectionsPath, "aws.spc")
 	if err := writeConnectionsFile(flags.ConnectionsPath, flags.TemplatePath, accounts); err != nil {
 		return err
 	}
+	log.Info("wrote Steampipe connections file", "path", connectionsFile)
 
 	log.Info("config files created successfully")
 	return nil

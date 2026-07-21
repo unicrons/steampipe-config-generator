@@ -26,6 +26,8 @@ Versioning](#versioning). Everything below shipped since `v0.1.2` and will ship 
   single-value tags are unaffected. See the README for examples.
 - `--version` flag and `version` subcommand, with version/commit/date injected at build time.
 - `--help` (via Cobra), documenting every flag.
+- Logs now include the path of each config file written (AWS credentials file and Steampipe
+  connections file).
 
 ### Changed
 
