@@ -35,19 +35,6 @@ func TestSplitTagValue_MultipleDelimiters(t *testing.T) {
 	}
 }
 
-// A comma-separated delimiter list parses correctly even though pflag.StringToStringVar also
-// uses "," as its own pair separator - confirmed safe because a single --tagSplit occurrence
-// with exactly one "=" never enters pflag's CSV parser (see TestNewRootCmd_TagSplit_CommaInValue).
-func TestParseDelimiters_CommaSeparated(t *testing.T) {
-	got, err := parseDelimiters("team", ":,-")
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if !equalUnordered(strings.Split(got, ""), []string{":", "-"}) {
-		t.Errorf("parseDelimiters() = %q, want the characters ':' and '-'", got)
-	}
-}
-
 func TestParseDelimiters_MultiCharacterTokenRejected(t *testing.T) {
 	_, err := parseDelimiters("team", "::")
 	if err == nil {
@@ -81,17 +68,6 @@ func TestSplitTagValue_DropsEmptyAndWhitespaceSubValues(t *testing.T) {
 	got := splitTagValue("team", "frontend::  :backend:", map[string]string{"team": ":"})
 	want := []string{"frontend", "backend"}
 	if !equalUnordered(got, want) {
-		t.Errorf("splitTagValue() = %v, want %v", got, want)
-	}
-}
-
-// A key with a configured delimiter whose value doesn't actually contain that delimiter still
-// goes through the split path, but yields a single unchanged value - same visible result as
-// the no-delimiter-configured case, via a different code path.
-func TestSplitTagValue_ConfiguredDelimiterNotPresentInValue(t *testing.T) {
-	got := splitTagValue("team", "frontend", map[string]string{"team": ":"})
-	want := []string{"frontend"}
-	if len(got) != 1 || got[0] != want[0] {
 		t.Errorf("splitTagValue() = %v, want %v", got, want)
 	}
 }

@@ -19,8 +19,15 @@ const (
 	maxConcurrentOUFetches  = 3 // under 5 TPS, burst 8 limit
 )
 
+// organizationsAPI is the subset of the AWS Organizations SDK client this package calls.
+type organizationsAPI interface {
+	organizations.ListAccountsAPIClient
+	organizations.ListTagsForResourceAPIClient
+	ListParents(ctx context.Context, params *organizations.ListParentsInput, optFns ...func(*organizations.Options)) (*organizations.ListParentsOutput, error)
+}
+
 type organizationsClient struct {
-	client *organizations.Client
+	client organizationsAPI
 }
 
 // NewOrganizationsClient returns a client backed by the real AWS SDK, using an aggressive

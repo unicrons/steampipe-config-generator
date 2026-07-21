@@ -30,12 +30,20 @@ func LoadConfig(ctx context.Context, cfg Config) (aws.Config, error) {
 		return awscfg, nil
 	}
 
-	creds, err := assumeRole(ctx, sts.NewFromConfig(awscfg), cfg.AssumeRoleArn, "steampipeConfigGenerator")
+	return withAssumedRole(ctx, sts.NewFromConfig(awscfg), cfg)
+}
+
+// withAssumedRole assumes cfg.AssumeRoleArn via client and returns a config using the
+// resulting temporary credentials. Split out from LoadConfig so it's testable with a fake STS
+// client - LoadConfig itself is left with nothing but the (untestable without a real network
+// call) construction of the real *sts.Client.
+func withAssumedRole(ctx context.Context, client stscreds.AssumeRoleAPIClient, cfg Config) (aws.Config, error) {
+	creds, err := assumeRole(ctx, client, cfg.AssumeRoleArn, "steampipeConfigGenerator")
 	if err != nil {
 		return aws.Config{}, fmt.Errorf("assuming role %s: %w", cfg.AssumeRoleArn, err)
 	}
 
-	awscfg, err = awsconfig.LoadDefaultConfig(ctx,
+	awscfg, err := awsconfig.LoadDefaultConfig(ctx,
 		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
 			creds.AccessKeyID, creds.SecretAccessKey, creds.SessionToken,
 		)),
@@ -48,7 +56,10 @@ func LoadConfig(ctx context.Context, cfg Config) (aws.Config, error) {
 	return awscfg, nil
 }
 
-func assumeRole(ctx context.Context, client *sts.Client, roleArn, sessionName string) (aws.Credentials, error) {
+// assumeRole retrieves temporary credentials for roleArn. client only needs to implement the
+// SDK's own stscreds.AssumeRoleAPIClient interface, not the concrete *sts.Client, so tests can
+// fake the AssumeRole call without any network access.
+func assumeRole(ctx context.Context, client stscreds.AssumeRoleAPIClient, roleArn, sessionName string) (aws.Credentials, error) {
 	provider := stscreds.NewAssumeRoleProvider(client, roleArn, func(o *stscreds.AssumeRoleOptions) {
 		o.RoleSessionName = sessionName
 	})
