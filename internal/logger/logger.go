@@ -10,7 +10,7 @@ import (
 // New returns a logger writing to stderr: human-readable text for "default", structured JSON
 // for "json". Its level is read from the LOG_LEVEL env var (default info).
 func New(format string) *slog.Logger {
-	opts := &slog.HandlerOptions{Level: levelFromEnv()}
+	opts := &slog.HandlerOptions{Level: levelFromEnv(), AddSource: true}
 
 	var handler slog.Handler
 	if format == "json" {
