@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Updated dependencies, including the AWS SDK for Go v2.
+- Updated dependencies.
 
 ## [1.0.0] - 2026-07-21
 
