@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-07
+
 ### Added
 
 - Log entries now include the source file and line that emitted them.
@@ -64,5 +66,6 @@ Versioning](#versioning). Everything below shipped since `v0.1.2`.
 See the [GitHub releases](https://github.com/unicrons/steampipe-config-generator/releases) for
 this and earlier versions.
 
-[Unreleased]: https://github.com/unicrons/steampipe-config-generator/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/unicrons/steampipe-config-generator/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/unicrons/steampipe-config-generator/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/unicrons/steampipe-config-generator/compare/v0.1.2...v1.0.0
