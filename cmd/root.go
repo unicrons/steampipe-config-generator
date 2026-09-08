@@ -74,16 +74,16 @@ func NewRootCmd(run func(ctx context.Context, log *slog.Logger, flags *Flags) er
 
 	cmd.Flags().StringVar(&flags.RoleName, "role", "", "AWS Role to use in AWS config credentials (required)")
 	cmd.Flags().StringVar(&flags.CredentialSource, "credential", "Environment", "AWS Credential source. Valid values are: Ec2InstanceMetadata, Environment, EcsContainer")
-	cmd.Flags().StringVar(&flags.CredentialPath, "path", "", "AWS Credentials file path")
-	cmd.Flags().StringVar(&flags.ConnectionsPath, "connections", "", "Steampipe AWS connections file path")
+	cmd.Flags().StringVar(&flags.CredentialPath, "path", "", "Path where the AWS credentials file is written (default: ~/.aws/)")
+	cmd.Flags().StringVar(&flags.ConnectionsPath, "connections", "", "Path where the Steampipe AWS connections file is written (default: ~/.steampipe/config/)")
 	cmd.Flags().StringVar(&flags.ImportSchema, "schema", "enabled", "AWS Connection import schema. Valid values are: enabled, disabled")
-	cmd.Flags().StringVar(&flags.DefaultRegion, "region", "", "AWS Connection default region")
+	cmd.Flags().StringVar(&flags.DefaultRegion, "region", "", "AWS Connection default region (default: $AWS_REGION, or us-east-1)")
 	cmd.Flags().StringVar(&targetRegions, "regions", "all", "AWS Connection target regions")
 	cmd.Flags().StringVar(&flags.AssumeRoleArn, "assume", "", "AWS Role to assume for getting Organization accounts")
-	cmd.Flags().StringVar(&flags.TemplatePath, "template", "", "Custom connections template path")
+	cmd.Flags().StringVar(&flags.TemplatePath, "template", "", "Path to a custom template file used to render the connections file")
 	cmd.Flags().StringVar(&flags.LogFormat, "log", "default", "Log format: default, json")
 	cmd.Flags().StringVar(&skipOUs, "skipOUs", "", "AWS OU IDs to skip from account connections")
-	cmd.Flags().StringArrayVar(&rawTagSplit, "tagSplit", nil, `Per-tag delimiter character(s) to split a multi-value tag on, as key=delimiter[,delimiter...] (repeatable), e.g. --tagSplit="team=:,-" splits the "team" tag on ':' or '-'. Parsed on the first '=' only, so delimiters may include '=' itself.`)
+	cmd.Flags().StringArrayVar(&rawTagSplit, "tagSplit", nil, `Split a multi-value tag into individual values, as key=delimiter[,delimiter...] (repeatable). E.g. --tagSplit="team=:,-" splits the "team" tag on ':' or '-'. See README for details.`)
 
 	if err := cmd.MarkFlagRequired("role"); err != nil {
 		panic(err)
