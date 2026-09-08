@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Upgraded to Go 1.27.1.
 - Updated dependencies.
 
 ## [1.0.0] - 2026-07-21
