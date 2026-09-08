@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Log entries now include the source file and line that emitted them.
 
+### Changed
+
+- Upgraded to Go 1.27.1.
+
 ## [1.0.0] - 2026-07-21
 
 Starting with this release, `steampipe-config-generator` follows [Semantic
