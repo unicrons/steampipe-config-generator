@@ -83,7 +83,7 @@ func NewRootCmd(run func(ctx context.Context, log *slog.Logger, flags *Flags) er
 	cmd.Flags().StringVar(&flags.TemplatePath, "template", "", "Path to a custom template file used to render the connections file")
 	cmd.Flags().StringVar(&flags.LogFormat, "log", "default", "Log format: default, json")
 	cmd.Flags().StringVar(&skipOUs, "skipOUs", "", "AWS OU IDs to skip from account connections")
-	cmd.Flags().StringArrayVar(&rawTagSplit, "tagSplit", nil, `Split a multi-value tag into individual values, as key=delimiter[,delimiter...] (repeatable). E.g. --tagSplit="team=:,-" splits the "team" tag on ':' or '-'. See README for details.`)
+	cmd.Flags().StringArrayVar(&rawTagSplit, "tagSplit", nil, `Split a multi-value tag into individual values, as key=delimiter[,delimiter...] (repeatable). See README for details.`)
 
 	if err := cmd.MarkFlagRequired("role"); err != nil {
 		panic(err)
