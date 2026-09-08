@@ -72,7 +72,7 @@ func NewRootCmd(run func(ctx context.Context, log *slog.Logger, flags *Flags) er
 		},
 	}
 
-	cmd.Flags().StringVar(&flags.RoleName, "role", "", "AWS Role to use in AWS config credentials (required)")
+	cmd.Flags().StringVar(&flags.RoleName, "role", "", "(required) AWS Role to use in AWS config credentials")
 	cmd.Flags().StringVar(&flags.CredentialSource, "credential", "Environment", "AWS Credential source. Valid values are: Ec2InstanceMetadata, Environment, EcsContainer")
 	cmd.Flags().StringVar(&flags.CredentialPath, "path", "", "AWS Credentials file path")
 	cmd.Flags().StringVar(&flags.ConnectionsPath, "connections", "", "Steampipe AWS connections file path")
