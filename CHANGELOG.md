@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Upgraded to Go 1.27.1.
-- `--help` now marks the required flag as `(required)`.
+- `--help` now marks the required flag as `(required)`, shows the effective default for `--path`,
+  `--connections` and `--region`, clarifies that `--path` and `--connections` are output paths
+  while `--template` is an input path, and has a shorter `--tagSplit` description.
 
 ## [1.0.0] - 2026-07-21
 
