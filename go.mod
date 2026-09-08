@@ -1,6 +1,6 @@
 module github.com/unicrons/steampipe-config-generator
 
-go 1.26.5
+go 1.27.1
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.45.1
