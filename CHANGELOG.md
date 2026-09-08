@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Changed
 
 - Upgraded to Go 1.27.1.
-- `--help` now marks `--role`, the only required flag, with a leading `(required)`.
+- `--help` now marks the required flag as `(required)`.
 
 ## [1.0.0] - 2026-07-21
 
