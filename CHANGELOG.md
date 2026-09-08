@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Upgraded to Go 1.27.1.
 - Updated dependencies.
+- Improved `--help` flag descriptions.
 
 ## [1.0.0] - 2026-07-21
 
